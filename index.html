@@ -1,106 +1,116 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ARULMODSS QUANTUM V8.0</title>
+    <title>QUANTUM V8.0 | BY ARULMODSS</title>
+    <link rel="icon" href="data:,">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Plus+Jakarta+Sans:wght@400;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <style>
         body {
-            background: radial-gradient(circle at top left, #0d1117, #010409);
-            color: #e6edf3;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            min-height: 100vh;
+            background: radial-gradient(circle at center, #0f172a 0%, #020617 100%);
+            font-family: 'Fira+Code', monospace;
+            color: #e2e8f0;
         }
         .glass {
-            background: rgba(25, 30, 40, 0.6);
+            background: rgba(30, 41, 59, 0.7);
             backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
         }
-        .neon-text {
-            background: linear-gradient(90deg, #00f2fe 0%, #4facfe 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+        .glow-btn {
+            transition: all 0.3s ease;
+            box-shadow: 0 0 15px rgba(34, 211, 238, 0.3);
         }
-        .btn-grad {
-            background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
-            transition: 0.3s;
-        }
-        .btn-grad:hover {
+        .glow-btn:hover {
+            box-shadow: 0 0 25px rgba(34, 211, 238, 0.6);
             transform: translateY(-2px);
-            box-shadow: 0 0 20px rgba(79, 172, 254, 0.5);
         }
-        code, pre { font-family: 'JetBrains Mono', monospace; }
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #30363d; border-radius: 10px; }
+        .terminal-scroll::-webkit-scrollbar {
+            width: 4px;
+        }
+        .terminal-scroll::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 10px;
+        }
     </style>
 </head>
-<body class="flex items-center justify-center p-4">
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
 
-    <div class="w-full max-w-3xl">
-        <div class="text-center mb-10">
-            <h1 class="text-5xl font-extrabold tracking-tight mb-2">
-                QUANTUM<span class="neon-text">V8</span>
-            </h1>
-            <div class="flex justify-center gap-4 text-[10px] font-bold tracking-[0.2em] text-gray-500 uppercase">
-                <span>By Arulmodss</span>
-                <span class="text-blue-900">|</span>
-                <span>Encrypted Neural Link</span>
-            </div>
+    <div class="mb-8 text-center">
+        <h1 class="text-5xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">
+            QUANTUM<span class="text-white">V8</span>
+        </h1>
+        <p class="text-xs text-slate-500 mt-2 uppercase tracking-[0.3em]">
+            By Arulmodss | Encrypted Neural Link
+        </p>
+    </div>
+
+    <div class="w-full max-w-2xl glass rounded-3xl p-6 shadow-2xl">
+        <textarea id="promptInput" 
+            class="w-full h-40 bg-transparent border-none text-cyan-50 placeholder-slate-600 focus:ring-0 text-lg resize-none"
+            placeholder="Ketik perintah lu di sini, Arulmodss..."></textarea>
+        
+        <div class="flex items-center justify-between mt-4 pt-4 border-t border-slate-800">
+            <span class="text-[10px] text-slate-500 font-mono">System: Ready_for_commands_</span>
+            <button onclick="generateCode()" id="genBtn"
+                class="glow-btn bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-bold py-3 px-8 rounded-2xl flex items-center gap-2">
+                GENERATE CODE
+            </button>
         </div>
+    </div>
 
-        <div class="glass rounded-3xl p-8 mb-6">
-            <div class="relative">
-                <textarea id="prompt" 
-                    class="w-full bg-transparent border-b border-gray-700 py-4 text-lg focus:outline-none focus:border-blue-500 transition-all resize-none h-32 custom-scrollbar"
-                    placeholder="Describe your request..."></textarea>
-                
-                <div class="flex justify-between items-center mt-6">
-                    <div class="text-xs text-gray-500 font-medium">System ready for commands_</div>
-                    <button onclick="generate()" class="btn-grad text-black font-bold px-8 py-3 rounded-full text-sm">
-                        GENERATE CODE
-                    </button>
+    <div class="w-full max-w-2xl mt-6">
+        <div class="glass rounded-2xl overflow-hidden border border-slate-800">
+            <div class="bg-slate-900/50 px-4 py-2 flex items-center gap-2 border-b border-slate-800">
+                <div class="flex gap-1.5">
+                    <div class="w-3 h-3 rounded-full bg-red-500/50"></div>
+                    <div class="w-3 h-3 rounded-full bg-yellow-500/50"></div>
+                    <div class="w-3 h-3 rounded-full bg-green-500/50"></div>
                 </div>
+                <span class="text-[10px] text-slate-500 ml-2">OUTPUT TERMINAL</span>
             </div>
-        </div>
-
-        <div id="result-area" class="hidden transition-all duration-500">
-            <div class="glass rounded-2xl overflow-hidden border border-blue-500/20">
-                <div class="bg-white/5 px-6 py-3 border-b border-white/10 flex items-center justify-between">
-                    <span class="text-xs font-bold text-blue-400 tracking-widest">OUTPUT TERMINAL</span>
-                    <div class="flex gap-1.5">
-                        <div class="w-2 h-2 rounded-full bg-red-500/50"></div>
-                        <div class="w-2 h-2 rounded-full bg-yellow-500/50"></div>
-                        <div class="w-2 h-2 rounded-full bg-green-500/50"></div>
-                    </div>
-                </div>
-                <pre id="output" class="p-8 text-sm leading-relaxed text-cyan-50/90 overflow-x-auto custom-scrollbar"></pre>
-            </div>
+            <pre id="output" class="p-6 text-sm text-cyan-400/90 whitespace-pre-wrap terminal-scroll max-h-80 overflow-y-auto">Menunggu perintah...</pre>
         </div>
     </div>
 
     <script>
-        async function generate() {
-            const prompt = document.getElementById('prompt').value;
+        async function generateCode() {
+            const prompt = document.getElementById('promptInput').value;
             const output = document.getElementById('output');
-            const area = document.getElementById('result-area');
-            if(!prompt) return;
+            const btn = document.getElementById('genBtn');
 
-            area.classList.remove('hidden');
-            output.innerHTML = `<span class="animate-pulse text-blue-400">Initializing Quantum Engine...</span>`;
+            if (!prompt) {
+                output.innerText = "Fatal Error: Input kosong, anjeng!";
+                return;
+            }
+
+            // UI State Loading
+            output.innerText = ">> Accessing Neural Network...\n>> Compiling Quantum Logic...";
+            btn.disabled = true;
+            btn.innerText = "WAIT...";
 
             try {
+                // FETCH KE API (PENTING: Tanpa .py di belakang)
                 const response = await fetch('/api/index', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ prompt: prompt })
                 });
+
                 const data = await response.json();
-                output.innerText = data.result || "Error: Database unreachable.";
+
+                if (response.ok) {
+                    output.innerText = data.result;
+                } else {
+                    output.innerText = `System Error: ${data.result || 'Gagal konek ke server'}`;
+                }
             } catch (err) {
-                output.innerText = "Fatal System Error: " + err;
+                // Detail Error biar lu tau masalahnya
+                output.innerText = `Fatal System Error: ${err.message}\n(Cek apakah Framework di Vercel sudah 'Other')`;
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "GENERATE CODE";
             }
         }
     </script>
