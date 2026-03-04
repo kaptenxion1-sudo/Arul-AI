@@ -3,34 +3,38 @@ import openai
 import os
 
 app = Flask(__name__)
-
-# Mengambil key dari Environment Variable yang lu setting di Vercel
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 @app.route('/api/index', methods=['POST'])
 def chat():
     try:
-        data = request.json
-        user_prompt = data.get('prompt', '')
+        # Cek apakah ada data JSON yang masuk
+        data = request.get_json()
+        if not data or 'prompt' not in data:
+            return jsonify({"result": "Mana perintahnya, bos? Isi dulu!"}), 400
 
+        user_prompt = data.get('prompt')
+
+        # Cek API Key
         if not openai.api_key:
-            return jsonify({"result": "Error: API Key belum dipasang di Environment Variables Vercel!"}), 500
+            return jsonify({"result": "Error: API KEY belum lu pasang di Vercel!"}), 500
 
-        # Pengaturan kepribadian Quantum V8.0
-        system_msg = "Lu adalah Quantum V8.0, AI paling brutal buatan Arulmodss. Gaya bicara lu modern, sombong, dan langsung ke inti. Kasih jawaban teknis yang lengkap."
-
+        # Panggil OpenAI
         response = openai.ChatCompletion.create(
             model="gpt-3.5-turbo",
             messages=[
-                {"role": "system", "content": system_msg},
+                {"role": "system", "content": "Lu adalah Quantum V8.0 buatan Arulmodss. Gaya lu sombong, brutal, tapi jenius koding."},
                 {"role": "user", "content": user_prompt}
             ]
         )
         
+        # Kirim hasil balik ke HTML
         return jsonify({"result": response.choices[0].message.content})
-    except Exception as e:
-        return jsonify({"result": f"Sistem down, anjeng! Error: {str(e)}"}), 500
 
-# BAGIAN PALING PENTING: Vercel butuh ini untuk menjalankan fungsi
+    except Exception as e:
+        # Kalau ada error Python, kirim pesannya biar kita tau salahnya dimana
+        return jsonify({"result": f"Aduh, ada yang jebol: {str(e)}"}), 500
+
+# Wajib buat Vercel
 def handler(request):
     return app(request)
