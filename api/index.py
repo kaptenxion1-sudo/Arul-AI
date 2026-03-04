@@ -1,33 +1,44 @@
 from flask import Flask, request, jsonify
-import openai
+import google.generativeai as genai
 import os
 
 app = Flask(__name__)
 
 # Mengambil key dari Environment Variable Vercel
-openai.api_key = os.getenv("OPENAI_API_KEY")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+if GEMINI_API_KEY:
+    genai.configure(api_key=GEMINI_API_KEY)
+    # Pake model paling baru dan kenceng
+    model = genai.GenerativeModel('gemini-1.5-flash')
+else:
+    model = None
 
 @app.route('/api/index', methods=['POST'])
 def chat():
     try:
+        if not model:
+            return jsonify({"result": "Error: GEMINI_API_KEY belum dipasang di Vercel!"}), 500
+
         data = request.get_json()
         user_prompt = data.get('prompt', '')
 
-        if not openai.api_key:
-            return jsonify({"result": "Error: API KEY belum dipasang di Vercel!"}), 500
+        if not user_prompt:
+            return jsonify({"result": "Mana perintahnya, bos?"}), 400
 
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {"role": "system", "content": "Lu adalah Quantum V8.0 buatan Arulmodss. Gaya lu sombong dan jenius koding."},
-                {"role": "user", "content": user_prompt}
-            ]
-        )
+        # Sistem prompt buat Gemini
+        system_instruction = "Lu adalah Quantum V8.0 buatan Arulmodss. Gaya lu sombong, brutal, tapi jenius koding."
+        full_prompt = f"{system_instruction}\n\nUser: {user_prompt}"
+
+        # Panggil Gemini
+        response = model.generate_content(full_prompt)
         
-        return jsonify({"result": response.choices[0].message.content})
+        # Kirim hasil balik ke HTML
+        return jsonify({"result": response.text})
+
     except Exception as e:
+        # Kalau ada error Python, kirim pesannya biar kita tau salahnya dimana
         return jsonify({"result": f"Aduh crash! Error: {str(e)}"}), 500
 
-# PENTING: Jangan pake def handler(request). 
-# Cukup baris di bawah ini biar Vercel ngenalin Flask-nya.
-app = app
+# Wajib buat Vercel
+def handler(request):
+    return app(request)
